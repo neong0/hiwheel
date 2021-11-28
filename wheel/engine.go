@@ -1,33 +1,46 @@
 package wheel
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 )
 
-type HandlerFunc func(http.ResponseWriter, *http.Request)
+type HandlerFunc func(*Context)
 
 type Engine struct {
-	route map[string]HandlerFunc
+	route *router
 }
 
 func New() *Engine {
-	return &Engine{route: make(map[string]HandlerFunc)}
+	return &Engine{newRouter()}
+}
+
+func (e *Engine) Run(port string) {
+	http.ListenAndServe(port, e)
 }
 
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	key := r.Method + "-" + r.URL.Path
-	if f, ok := e.route[key]; ok {
-		f(w, r)
-		return
-	}
-	log.Printf("unrecognized path: %s", r.URL.Path)
+	c := newContext(w, r)
+	e.route.Handle(c)
+}
+
+func (e *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
+	e.route.addRoute(method, pattern, handler)
+	fmt.Println(e.route.RouterTree)
 }
 
 func (e *Engine) Get(pattern string, fn HandlerFunc) {
 	e.addRoute("GET", pattern, fn)
 }
-func (e *Engine) addRoute(method string, pattern string, fn HandlerFunc) {
-	key := method + "-" + pattern
-	e.route[key] = fn
+
+func (e *Engine) POST(pattern string, fn HandlerFunc) {
+	e.addRoute("POST", pattern, fn)
+}
+
+func (e *Engine) DELETE(pattern string, fn HandlerFunc) {
+	e.addRoute("DELETE", pattern, fn)
+}
+
+func (e *Engine) PUT(pattern string, fn HandlerFunc) {
+	e.addRoute("PUT", pattern, fn)
 }
