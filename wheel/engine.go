@@ -1,7 +1,6 @@
 package wheel
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -26,7 +25,6 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (e *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
 	e.route.addRoute(method, pattern, handler)
-	fmt.Println(e.route.RouterTree)
 }
 
 func (e *Engine) Get(pattern string, fn HandlerFunc) {

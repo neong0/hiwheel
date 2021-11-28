@@ -66,6 +66,6 @@ func (c *Context) HTML(code int, html string) {
 }
 
 func (c *Context) Param(key string) string {
-	res, _ := c.Params[key]
+	res := c.Params[key]
 	return res
 }

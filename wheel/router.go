@@ -1,7 +1,6 @@
 package wheel
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -36,7 +35,6 @@ func (r *router) Handle(c *Context) {
 		c.Params = param
 		key := c.Method + "-" + c.Path
 		r.Handlers[key](c)
-		fmt.Println(n)
 	} else {
 		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
 	}
