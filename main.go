@@ -5,13 +5,19 @@ import (
 	"hiwheel/wheel"
 	"log"
 	"net/http"
+	"time"
 )
+
+func testMiddleware(c *wheel.Context) {
+	t := time.Now()
+	c.String(500, "Internal Server Error")
+	log.Printf("[%d] %s in %v for group", c.HTTPStatus, c.Req.URL, time.Since(t))
+}
 
 func main() {
 	fmt.Println("hello internet")
-	log.SetFlags(log.Ltime | log.Lshortfile)
 	e := wheel.New()
-
+	e.Use(wheel.WheeLogger())
 	v1 := e.Group("/v1")
 	{
 		v1.GET("/", func(c *wheel.Context) {

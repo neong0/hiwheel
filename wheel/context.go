@@ -14,6 +14,9 @@ type Context struct {
 	Path       string
 	Method     string
 	HTTPStatus int
+
+	handlers []HandlerFunc
+	index    int
 }
 
 func newContext(w http.ResponseWriter, r *http.Request) *Context {
@@ -23,6 +26,7 @@ func newContext(w http.ResponseWriter, r *http.Request) *Context {
 		Path:   r.URL.Path,
 		Method: r.Method,
 		Params: make(map[string]string),
+		index:  -1,
 	}
 }
 
@@ -38,7 +42,6 @@ func (c *Context) SetHeader(key string, val string) {
 	c.Writer.Header().Set(key, val)
 }
 
-//为什么要写入指定类型
 func (c *Context) String(code int, format string, param ...interface{}) {
 	c.SetHeader("Content/Type", "text/plain")
 	c.HTTPStatus = code
@@ -68,4 +71,12 @@ func (c *Context) HTML(code int, html string) {
 func (c *Context) Param(key string) string {
 	res := c.Params[key]
 	return res
+}
+
+func (c *Context) Next() {
+	c.index++
+	s := len(c.handlers)
+	for ; c.index < s; c.index++ {
+		c.handlers[c.index](c)
+	}
 }
