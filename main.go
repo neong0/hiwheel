@@ -8,20 +8,25 @@ import (
 	"time"
 )
 
-func testMiddleware(c *wheel.Context) {
-	t := time.Now()
-	c.String(500, "Internal Server Error")
-	log.Printf("[%d] %s in %v for group", c.HTTPStatus, c.Req.URL, time.Since(t))
+func testMiddleware() wheel.HandlerFunc {
+	return func(c *wheel.Context) {
+		t := time.Now()
+		c.String(500, "Internal Server Error")
+		log.Printf("[%d] %s in %v for group", c.HTTPStatus, c.Req.URL, time.Since(t))
+	}
+
 }
 
 func main() {
 	fmt.Println("hello internet")
 	e := wheel.New()
-	e.Use(wheel.WheeLogger())
+	e.Use(testMiddleware())
+	e.LoadHTMLGlob("templates/*")
+	e.Static("/assets", "./static")
 	v1 := e.Group("/v1")
 	{
 		v1.GET("/", func(c *wheel.Context) {
-			c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
+			c.HTML(http.StatusOK, "css.tmpl", nil)
 		})
 
 		v1.GET("/hello", func(c *wheel.Context) {
