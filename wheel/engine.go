@@ -1,6 +1,7 @@
 package wheel
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -25,7 +26,7 @@ func (g *RouterGroup) Group(prefix string) *RouterGroup {
 		middleware: make([]HandlerFunc, 0),
 		engine:     eng,
 	}
-	eng.groups = append(eng.groups, *newGroup)
+	eng.groups = append(eng.groups, newGroup)
 	return newGroup
 }
 
@@ -77,15 +78,15 @@ func (g *RouterGroup) Static(relatePath string, root string) {
 type Engine struct {
 	*RouterGroup
 	route         *router
-	groups        []RouterGroup
+	groups        []*RouterGroup
 	htmlTemplates *template.Template
 	funcMap       template.FuncMap
 }
 
 func New() *Engine {
 	engine := &Engine{route: newRouter()}
-	engine.groups = make([]RouterGroup, 0)
 	engine.RouterGroup = &RouterGroup{engine: engine}
+	engine.groups = []*RouterGroup{engine.RouterGroup}
 	return engine
 }
 
@@ -103,11 +104,11 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var middlewares []HandlerFunc
 	for _, group := range e.groups {
 		if strings.HasPrefix(r.URL.Path, group.prefix) {
+			fmt.Println(group.middleware)
 			middlewares = append(middlewares, group.middleware...)
 		}
 	}
 	c := newContext(w, r)
-	c.engine = e
 	c.handlers = middlewares
 	e.route.Handle(c)
 }

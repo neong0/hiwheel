@@ -11,6 +11,13 @@ func main() {
 	e := wheel.Default()
 	// e.LoadHTMLGlob("templates/*")
 	// e.Static("/assets", "./static")
+	e.GET("/panic", func(c *wheel.Context) {
+		names := []string{"geektutu"}
+		c.String(http.StatusOK, names[100])
+	})
+	e.GET("/", func(c *wheel.Context) {
+		c.String(http.StatusOK, "Hello web\n")
+	})
 	v1 := e.Group("/v1")
 	{
 		// v1.GET("/", func(c *wheel.Context) {
@@ -20,10 +27,7 @@ func main() {
 		v1.GET("/hello", func(c *wheel.Context) {
 			c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
 		})
-		v1.GET("/panic", func(c *wheel.Context) {
-			names := []string{"geektutu"}
-			c.String(http.StatusOK, names[100])
-		})
+
 	}
 	v2 := e.Group("/v2")
 	{

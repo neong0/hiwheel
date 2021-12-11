@@ -1,6 +1,7 @@
 package wheel
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -33,13 +34,14 @@ func (r *router) Handle(c *Context) {
 	n, params := r.getRoute(c.Method, c.Path)
 	if n != nil {
 		c.Params = params
-		key := c.Method + "-" + c.Path
+		key := c.Method + "-" + n.pattern
 		c.handlers = append(c.handlers, r.Handlers[key])
 	} else {
 		c.handlers = append(c.handlers, func(c *Context) {
 			c.String(http.StatusNotFound, "404 not found: %s\n", c.Path)
 		})
 	}
+	fmt.Printf("n: %s,", n)
 	c.Next()
 }
 
