@@ -89,6 +89,12 @@ func New() *Engine {
 	return engine
 }
 
+func Default() *Engine {
+	e := New()
+	e.Use(Wheelogger(), Recovery())
+	return e
+}
+
 func (e *Engine) Run(port string) {
 	http.ListenAndServe(port, e)
 }

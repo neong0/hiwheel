@@ -1,7 +1,6 @@
 package wheel
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -48,7 +47,7 @@ func (rn *routeNode) insert(pattern string, parts []string, height int) {
 			isAll: part[0] == ':' || part[0] == '*',
 		}
 		rn.childs = append(rn.childs, child)
-		fmt.Println(child)
+
 	}
 	child.insert(pattern, parts, height+1)
 }
@@ -65,7 +64,6 @@ func (rn *routeNode) search(parts []string, height int) *routeNode {
 	part := parts[height]
 	childs := rn.matchChildren(part)
 	for _, child := range childs {
-		fmt.Println(child)
 		result := child.search(parts, height+1)
 		if result != nil {
 

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Logger() HandlerFunc {
+func Wheelogger() HandlerFunc {
 	return func(c *Context) {
 		t := time.Now()
 		c.Next()
